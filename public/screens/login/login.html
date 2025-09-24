@@ -1,0 +1,48 @@
+<div class="container-fluid vh-100 bg-splash d-flex align-items-center">
+  <div class="row w-100">
+    <!-- Columna izquierda: card con el formulario -->
+    <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
+      <div class="card shadow rounded-4 d-flex align-items-center justify-content-center text-center"
+        style="max-width:500px; width:100%; min-height:480px; padding: 2rem;">
+
+        <div class="w-100" style="max-width:400px;">
+          <h1 class="text-center fw-bold mb-5">Iniciar sesión</h1>
+
+          <form id="formLogin" novalidate>
+            <!-- Correo -->
+            <div class="mb-4">
+              <input type="email" name="email" class="form-control form-control-lg" placeholder="Correo electrónico"
+                required />
+            </div>
+
+            <!-- Contraseña con ícono DENTRO del input -->
+            <div class="position-relative mb-3">
+              <input type="password" id="passwordInput" name="password" class="form-control form-control-lg pe-5"
+                placeholder="Contraseña" required />
+              <i id="togglePassword"
+                class="bi bi-eye position-absolute top-50 end-0 translate-middle-y me-3 password-icon" role="button"
+                aria-label="Mostrar u ocultar contraseña"></i>
+            </div>
+
+            <button class="btn btn-primary mt-4 btn-lg fw-bold w-100" type="submit">Ingresar</button>
+          </form>
+
+          <div class="text-center mt-4">
+            ¿No tienes cuenta?
+            <a href="#/register" class="text-decoration-none text-primary">
+              Regístrate
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Columna derecha: logo o imagen -->
+    <div class="col-12 col-md-6 d-flex justify-content-center align-items-center text-white">
+      <div class="text-center">
+        <img src="assets/logo.png" alt="Logo de la app" class="img-fluid mb-3" style="width:30vw;" />
+      </div>
+    </div>
+  </div>
+</div>
