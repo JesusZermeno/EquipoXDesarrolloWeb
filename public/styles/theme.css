@@ -1,0 +1,42 @@
+:root {
+  --indigo-600: #4f46e5; /* más claro */
+  --indigo-700: #4338ca; /* intermedio */
+  --indigo-900: #312e81; /* muy fuerte */
+}
+
+.bg-splash {
+  background: linear-gradient(
+    to bottom,
+    var(--indigo-900) 0%,     /* fuerte arriba */
+    var(--indigo-600) 50%,    /* más claro en el centro */
+    var(--indigo-900) 100%    /* fuerte abajo */
+  );
+}
+
+
+/* Estilo para el ícono del ojo */
+.password-icon {
+  font-size: 1.5rem; /* tamaño más grande */
+  color: #000;       /* negro */
+  cursor: pointer;   /* mano al pasar */
+}
+
+.password-icon:hover {
+  color: #333;       /* un poco más claro al pasar */
+}
+
+
+/* Área con scroll dentro de la card para registros largos */
+.form-scroll {
+  max-height: 350px;       /* ajusta si lo necesitas */
+  overflow-y: auto;
+  padding-right: .25rem;   /* espacio para que no tape el scrollbar */
+}
+
+/* (opcional) estiliza el scrollbar en navegadores WebKit */
+.form-scroll::-webkit-scrollbar { width: 8px; }
+.form-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,.15);
+  border-radius: 8px;
+}
+
