@@ -42,7 +42,7 @@ export async function render(root) {
       Swal.fire({
         icon: "error",
         title: "Error en el login",
-        text: err.message || "Credenciales inválidas",
+        text: "Credenciales inválidas",
       });
     } finally {
       btn.disabled = false;
