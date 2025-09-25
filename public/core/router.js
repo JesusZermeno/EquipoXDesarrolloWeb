@@ -5,7 +5,9 @@ const routes = {
   "/splash":   () => import("../screens/splash/splash.js"),
   "/login":    () => import("../screens/login/login.js"),
   "/register": () => import("../screens/register/register.js"),
+  "/home":     () => import("../screens/home/home.js"),   // 👈 NUEVA
 };
+
 
 // Obtiene la ruta actual del hash (o /splash por defecto)
 function getPath() {
