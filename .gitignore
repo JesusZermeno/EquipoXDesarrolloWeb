@@ -1,0 +1,61 @@
+# ───────────────────────────────
+# Node / Express
+# ───────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Logs
+logs
+*.log
+*.log.*
+*.out
+*.err
+
+# Coverage / testing
+coverage/
+.nyc_output/
+
+# ───────────────────────────────
+# Build / Cache
+# ───────────────────────────────
+dist/
+build/
+.cache/
+.tmp/
+.eslintcache
+
+# ───────────────────────────────
+# Firebase / Config (nunca subir llaves)
+# ───────────────────────────────
+/api/serviceAccountKey.json
+/api/.env
+
+# ───────────────────────────────
+# OS Specific
+# ───────────────────────────────
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ───────────────────────────────
+# IDEs / Editors
+# ───────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ───────────────────────────────
+# Misc
+# ───────────────────────────────
+*.local
