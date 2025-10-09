@@ -1,9 +1,5 @@
-import { renderHTML } from '../../utils/dom.js';
-import { requireAuth } from '../../core/guards.js';
+import { renderLayout } from "../../core/layout.js";
 
-export async function render(root) {
-  // Protegemos esta pantalla:
-  requireAuth(async () => {
-    root.innerHTML = await renderHTML('./screens/home/home.html');
-  });
+export async function render() {
+  await renderLayout("./screens/home/home.html");
 }

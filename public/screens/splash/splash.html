@@ -1,9 +1,10 @@
-<div class="d-flex flex-column justify-content-center align-items-center vh-100 bg-splash text-white">
+<div class="d-flex flex-column justify-content-center align-items-center vh-100 bg-splash text-white splash-stage">
   <div>
-    <!-- Coloca tu logo si quieres -->
-    <img src="assets/logo.png" alt="Logo de la app" class="img-fluid mb-3" style="width:20vw;" />
+    <!-- Logo con animación de profundidad -->
+    <img src="assets/logo.png" alt="Logo de la app" class="img-fluid mb-2 logo-anim-3d" />
   </div>
-  <div class="spinner-border" role="status" aria-hidden="true"></div>
-  <small class="fs-5 fw-semibold text-white">Cargando…</small>
-  
+
+  <!-- Spinner (giro continuo + aparición) -->
+  <div class="spinner-border spinner-appear spinner-rotate" role="status" aria-hidden="true"></div>
+  <!-- <small class="fs-5 fw-semibold text-white">Cargando…</small> -->
 </div>
