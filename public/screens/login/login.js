@@ -32,12 +32,20 @@ export async function render(root) {
     try {
       await login(email, password);
 
+      // ✅ Alerta automática (sin botón, se cierra sola)
       Swal.fire({
         icon: "success",
         title: "¡Bienvenido!",
         text: "Inicio de sesión correcto",
-        confirmButtonText: "Continuar",
-      }).then(() => location.replace("#/home"));
+        showConfirmButton: false,   // 👈 oculta el botón
+        timer: 1800,                // ⏱ se cierra automáticamente en 1.8s
+        timerProgressBar: true,     // barra de tiempo opcional
+        didClose: () => {
+          // redirección automática cuando se cierre
+          location.replace("#/home");
+        },
+      });
+
     } catch (err) {
       Swal.fire({
         icon: "error",
@@ -50,6 +58,7 @@ export async function render(root) {
     }
   });
 
+  // Mostrar/ocultar contraseña
   if (togglePassword && passwordInput) {
     togglePassword.addEventListener("click", () => {
       const toText = passwordInput.type === "password";

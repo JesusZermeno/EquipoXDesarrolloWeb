@@ -1,0 +1,25 @@
+<!-- Sidebar: fijo en ≥ lg, offcanvas en < lg -->
+<div id="sidebar"
+     class="offcanvas offcanvas-start offcanvas-lg sidebar"
+     tabindex="-1"
+     data-bs-scroll="true"
+     data-bs-backdrop="false"
+     aria-labelledby="sidebarLabel">
+
+  <!-- Header visible solo en móvil (para cerrar el offcanvas) -->
+  <div class="offcanvas-header d-lg-none">
+    <h5 class="offcanvas-title" id="sidebarLabel">Menú</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+  </div>
+
+  <div class="offcanvas-body p-0">
+    <nav>
+      <ul class="list-unstyled m-0">
+        <li><a href="#/home"     class="d-block py-2 px-3 nav-link-sidebar"><i class="bi bi-house me-2"></i> Inicio</a></li>
+        <li><a href="#/stats"    class="d-block py-2 px-3 nav-link-sidebar"><i class="bi bi-bar-chart me-2"></i> Estadísticas</a></li>
+        <li><a href="#/alerts"   class="d-block py-2 px-3 nav-link-sidebar"><i class="bi bi-bell me-2"></i> Alertas</a></li>
+        <li><a href="#/settings" class="d-block py-2 px-3 nav-link-sidebar"><i class="bi bi-gear me-2"></i> Configuración</a></li>
+      </ul>
+    </nav>
+  </div>
+</div>

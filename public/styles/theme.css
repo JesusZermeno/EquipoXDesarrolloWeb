@@ -1,42 +1,238 @@
 :root {
-  --indigo-600: #4f46e5; /* más claro */
-  --indigo-700: #4338ca; /* intermedio */
-  --indigo-900: #312e81; /* muy fuerte */
+  --indigo-600: #4f46e5;
+  --indigo-700: #4338ca;
+  --indigo-900: #312e81;
 }
 
 .bg-splash {
   background: linear-gradient(
     to bottom,
-    var(--indigo-900) 0%,     /* fuerte arriba */
-    var(--indigo-600) 50%,    /* más claro en el centro */
-    var(--indigo-900) 100%    /* fuerte abajo */
+    var(--indigo-900) 0%,
+    var(--indigo-600) 50%,
+    var(--indigo-900) 100%
   );
 }
 
+/* Icono ojo (inputs password) */
+.password-icon { font-size: 1.5rem; color: #000; cursor: pointer; }
+.password-icon:hover { color: #333; }
 
-/* Estilo para el ícono del ojo */
-.password-icon {
-  font-size: 1.5rem; /* tamaño más grande */
-  color: #000;       /* negro */
-  cursor: pointer;   /* mano al pasar */
-}
-
-.password-icon:hover {
-  color: #333;       /* un poco más claro al pasar */
-}
-
-
-/* Área con scroll dentro de la card para registros largos */
-.form-scroll {
-  max-height: 350px;       /* ajusta si lo necesitas */
-  overflow-y: auto;
-  padding-right: .25rem;   /* espacio para que no tape el scrollbar */
-}
-
-/* (opcional) estiliza el scrollbar en navegadores WebKit */
+/* Scroll interno en cards de registro */
+.form-scroll { max-height: 350px; overflow-y: auto; padding-right: .25rem; }
 .form-scroll::-webkit-scrollbar { width: 8px; }
-.form-scroll::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,.15);
-  border-radius: 8px;
+.form-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); border-radius: 8px; }
+
+/* ——— Sidebar ——— */
+.sidebar { background:#1b2c4b; color:#fff; }
+
+/* Fuerza colores y elimina padding interno del offcanvas */
+#sidebar.offcanvas {
+  background-color: #1b2c4b !important;
+  color: #fff !important;
+  /* ← estos dos quitan la franja (padding nativo del offcanvas) */
+  --bs-offcanvas-padding-x: 0 !important;
+  --bs-offcanvas-padding-y: 0 !important;
+}
+#sidebar .offcanvas-header,
+#sidebar .offcanvas-body {
+  background-color: inherit !important;
+  color: inherit !important;
+}
+#sidebar .offcanvas-body { padding: 0 !important; } /* por si acaso */
+
+/* Links del menú (que cubran TODO el ancho) */
+#sidebar nav ul { padding-left: 0; margin: 0; }
+#sidebar nav li { margin: 0; }
+
+#sidebar .nav-link-sidebar {
+  display: block;          /* ocupa todo el ancho */
+  width: 100%;
+  padding: 10px 16px;
+  color: rgba(255,255,255,.85);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+}
+#sidebar .nav-link-sidebar:hover,
+#sidebar .nav-link-sidebar.active,
+#sidebar .nav-link-sidebar:focus {
+  background: rgba(255,255,255,.1);
+  color: #fff;
+  border-left-color: #0d6efd;
+  outline: none;
+  box-shadow: none;
 }
 
+/* ——— Topbar ——— */
+.topbar {
+  height: 60px;
+  background: #12152a;
+  color: #fff;
+  padding: 0 12px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+}
+
+/* ——— Footer ——— */
+.footer {
+  background: #f8f9fa;
+  padding: 12px;
+  font-size: .9rem;
+  color: #6c757d;
+  border-top: 1px solid #dee2e6;
+}
+
+/* Contenido (móvil por defecto) */
+.dashboard main {
+  padding: 80px 16px 16px;        /* espacio para topbar en móvil */
+  background: #f5f6fa;
+  min-height: calc(100vh - 60px - 40px); /* 100% de la pantalla menos topbar (60px) y footer aprox (40px) */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Forzar que contentMount se expanda */
+#contentMount {
+  flex: 1 0 auto;
+}
+
+/* Evitar desbordes horizontales */
+html, body { overflow-x: hidden; height: 100%; }
+
+/* ——— Responsive (≤ 991.98px): ocupar todo el ancho ——— */
+@media (max-width: 991.98px) {
+  .dashboard main {
+    padding: 0px 0 0 !important; /* solo espacio arriba para topbar */
+    min-height: calc(100vh - 60px - 40px); /* mantener altura completa */
+  }
+
+  .container-fluid {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .row {
+    --bs-gutter-x: 0 !important;
+    --bs-gutter-y: 0 !important;
+  }
+
+  [class*="col-"] {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+
+/* ——— Desktop (≥ lg): sidebar fijo + layout estable ——— */
+@media (min-width: 992px) {
+  /* El offcanvas se vuelve panel fijo y visible */
+  #sidebar.offcanvas {
+    position: fixed !important;
+    inset: 0 auto 0 0 !important;   /* top:0; right:auto; bottom:0; left:0 */
+    width: 240px !important;
+    height: 100vh !important;
+    transform: none !important;     
+    visibility: visible !important;
+    border-right: none !important;
+    box-shadow: none !important;
+    z-index: 1030 !important;
+  }
+
+  /* Reserva el espacio del sidebar en el flujo */
+  #sidebarMount {
+    width: 240px;
+    flex: 0 0 240px;
+    background: #1b2c4b;            
+  }
+
+  /* Topbar a la derecha del sidebar */
+  .topbar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 240px !important;
+    right: 0 !important;
+    z-index: 1040 !important;
+  }
+
+  /* Contenido en desktop */
+  .dashboard main {
+    margin-left: 0 !important;
+    padding: 80px 24px 24px !important;
+    min-height: calc(100vh - 60px - 40px);
+  }
+}
+
+
+/* Escenario con perspectiva para el efecto de profundidad */
+.splash-stage {
+  perspective: 1000px;             /* activa la percepción 3D */
+  perspective-origin: 50% 50%;
+}
+
+/* Logo: entra desde "atrás", borroso y transparente, y se asienta */
+.logo-anim-3d {
+  width: min(20vw, 220px);
+  transform-style: preserve-3d;
+  animation:
+    splash-depth-in 850ms cubic-bezier(.18,.9,.25,1) 60ms both,
+    splash-float 3200ms ease-in-out 980ms infinite; /* flotación sutil después de entrar */
+  will-change: transform, filter, opacity;
+}
+
+/* Aparición suave del spinner */
+.spinner-appear {
+  opacity: 0;
+  animation: spinner-fade 420ms ease-out 450ms forwards;
+}
+
+/* Giro continuo del spinner (por si no usas Bootstrap JS/CSS completo) */
+.spinner-rotate {
+  /* Si Bootstrap ya lo gira, esto no rompe nada */
+  animation: spinner-rot 0.75s linear infinite, spinner-fade 420ms ease-out 450ms forwards;
+}
+
+/* ====== Keyframes ====== */
+
+/* Profundidad: de lejos (Z negativo), pequeño, borroso y transparente -> posición real */
+@keyframes splash-depth-in {
+  0% {
+    transform: translateZ(-260px) scale(0.86) translateY(8px);
+    opacity: 0;
+    filter: blur(10px);
+  }
+  55% {
+    transform: translateZ(40px) scale(1.04) translateY(-3px); /* leve sobrepaso */
+    opacity: 1;
+    filter: blur(1.5px);
+  }
+  100% {
+    transform: translateZ(0) scale(1) translateY(0);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+/* Flotación muy sutil (opcional) */
+@keyframes splash-float {
+  0%   { transform: translateZ(0) translateY(0); }
+  50%  { transform: translateZ(0) translateY(-6px); }
+  100% { transform: translateZ(0) translateY(0); }
+}
+
+/* Fade-in del spinner */
+@keyframes spinner-fade {
+  to { opacity: 1; }
+}
+
+/* Rotación del spinner (fallback o refuerzo) */
+@keyframes spinner-rot {
+  to { transform: rotate(360deg); }
+}
+
+/* Respeto a usuarios con reducción de movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .logo-anim-3d,
+  .spinner-appear,
+  .spinner-rotate {
+    animation: none !important;
+  }
+}
