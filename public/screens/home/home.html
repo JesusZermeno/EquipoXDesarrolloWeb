@@ -1,43 +1,318 @@
-<div class="container-fluid">
-  <div class="row g-3">
-    <div class="col-12">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title mb-3">Resumen</h5>
-          <div class="row g-3">
-            <div class="col-md-3">
-              <div class="card kpi">
-                <div class="card-body">Potencia actual</div>
-              </div>
-            </div>
-            <div class="col-md-3">
-              <div class="card kpi">
-                <div class="card-body">Energía hoy</div>
-              </div>
-            </div>
-            <div class="col-md-3">
-              <div class="card kpi">
-                <div class="card-body">Disponibilidad</div>
-              </div>
-            </div>
-            <div class="col-md-3">
-              <div class="card kpi">
-                <div class="card-body">CO₂ evitado</div>
-              </div>
-            </div>
+<!-- Landing Home -->
+<div class="landing">
+
+  <!-- NAVBAR exclusivo de landing -->
+  <nav id="landingNav" class="navbar navbar-expand-lg navbar-dark fixed-top landing-navbar">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#/home">
+        <i class="bi bi-sun-fill"></i>
+        <span class="fw-bold">SunTec</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#landingNavCollapse"
+        aria-controls="landingNavCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div id="landingNavCollapse" class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+          <li class="nav-item"><a class="nav-link" href="#beneficios">Beneficios</a></li>
+          <li class="nav-item"><a class="nav-link" href="#como-funciona">Cómo funciona</a></li>
+          <li class="nav-item"><a class="nav-link" href="#galeria">Galería</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+          <li class="nav-item ms-lg-3">
+            <a class="btn btn-primary shadow-smooth" href="#/login">
+              Inicia sesión
+            </a>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero-landing" id="home">
+    <div class="hero-glow"></div>
+    <div class="container py-5">
+      <div class="row align-items-center g-4">
+        <div class="col-12 col-lg-6">
+          <span class="badge badge-soft mb-3">
+            <i class="bi bi-lightning-charge-fill me-1"></i> Energía limpia y accesible
+          </span>
+          <h1 class="display-5 fw-bold mb-3">Ahorra con paneles solares y cuida el planeta</h1>
+          <p class="lead text-hero mb-4">
+            Reduce tu recibo de luz hasta un <strong>95%</strong> y contribuye a un futuro sostenible con sistemas
+            fotovoltaicos de alta eficiencia.
+          </p>
+          <div class="d-flex gap-2 flex-wrap">
+            <a href="#contacto" class="btn btn-primary btn-lg">
+              <i class="bi bi-telephone-outbound me-2"></i>Solicitar asesoría
+            </a>
+            <a href="#beneficios" class="btn btn-outline-light btn-lg">
+              <i class="bi bi-info-circle me-2"></i>Ver beneficios
+            </a>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+          <div class="ratio ratio-16x9 shadow-smooth rounded-4 overflow-hidden">
+            <img src="./assets/hero.png"
+              alt="Instalación de paneles solares" class="w-100 h-100" />
           </div>
         </div>
       </div>
     </div>
-    <div class="col-12">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title mb-3">Potencia vs Irradiancia</h5>
-          <div class="placeholder-glow">
-            <div class="placeholder col-12" style="height:240px;"></div>
+  </header>
+
+  <!-- BENEFICIOS -->
+  <section id="beneficios" class="py-5 bg-light">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="section-title">Beneficios principales</h2>
+        <p class="text-secondary">Razones por las que miles de hogares y empresas ya usan energía solar.</p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card-feature h-100 p-3">
+            <div class="icon mx-auto"><i class="bi bi-cash-coin fs-4 text-dark"></i></div>
+            <h5 class="fw-semibold text-dark">Ahorro en tu recibo</h5>
+            <p class="text-muted-2">Baja drásticamente el costo mensual y protégente de incrementos futuros.</p>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card-feature h-100 p-3">
+            <div class="icon mx-auto"><i class="bi bi-recycle fs-4 text-dark"></i></div>
+            <h5 class="fw-semibold text-dark">Sustentable</h5>
+            <p class="text-muted-2">Genera energía limpia y reduce tu huella de carbono.</p>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card-feature h-100 p-3">
+            <div class="icon mx-auto"><i class="bi bi-house-check fs-4 text-dark"></i></div>
+            <h5 class="fw-semibold text-dark">Valor patrimonial</h5>
+            <p class="text-muted-2">Mejora energética atractiva que aumenta el valor del inmueble.</p>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card-feature h-100 p-3">
+            <div class="icon mx-auto"><i class="bi bi-gear-wide-connected fs-4 text-dark"></i></div>
+            <h5 class="fw-semibold text-dark">Bajo mantenimiento</h5>
+            <p class="text-muted-2">Equipos confiables y vida útil de 25+ años.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-5 align-items-center g-4">
+        <div class="col-12 col-lg-6">
+          <img class="img-fluid rounded-4 shadow"
+            src="./assets/casaPanel.png"
+            alt="Casa con paneles solares" />
+        </div>
+        <div class="col-12 col-lg-6">
+          <h3 class="fw-bold">¿Por qué ahora?</h3>
+          <ul class="list-unstyled mt-3">
+            <li class="mb-2"><i class="bi bi-check-circle-fill me-2 check"></i>Costos de paneles más bajos que nunca.
+            </li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill me-2 check"></i>Garantías de hasta 25 años.</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill me-2 check"></i>Opciones de financiamiento accesibles.
+            </li>
+          </ul>
+          <a class="btn btn-primary mt-2" href="#contacto">Quiero una cotización</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CÓMO FUNCIONA -->
+  <section id="como-funciona" class="py-5">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="section-title">Cómo funciona</h2>
+        <p class="text-secondary">Del sol a tus aparatos, en 4 pasos simples.</p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="h-100 p-4 border rounded-4">
+            <span class="badge bg-dark mb-2">1</span>
+            <h5>Paneles fotovoltaicos</h5>
+            <p class="mb-0 text-secondary">Captan luz solar y la convierten en corriente directa (DC).</p>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="h-100 p-4 border rounded-4">
+            <span class="badge bg-dark mb-2">2</span>
+            <h5>Inversor</h5>
+            <p class="mb-0 text-secondary">Convierte la energía DC en AC para tu hogar.</p>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="h-100 p-4 border rounded-4">
+            <span class="badge bg-dark mb-2">3</span>
+            <h5>Medidor bidireccional</h5>
+            <p class="mb-0 text-secondary">Registra la energía consumida y la inyectada a la red.</p>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="h-100 p-4 border rounded-4">
+            <span class="badge bg-dark mb-2">4</span>
+            <h5>Monitoreo</h5>
+            <p class="mb-0 text-secondary">Consulta el desempeño en tiempo real desde tu celular.</p>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- GALERÍA / CARRUSEL -->
+  <section id="galeria" class="py-5 bg-light">
+    <div class="container">
+      <div class="d-flex align-items-end justify-content-between mb-3">
+        <div>
+          <h2 class="section-title mb-0">Galería</h2>
+          <p class="text-secondary">Proyectos y equipos en acción.</p>
+        </div>
+        <div class="d-none d-md-block text-end">
+          <button class="btn btn-outline-dark me-2" data-bs-target="#carouselSolar" data-bs-slide="prev"
+            aria-label="Anterior">
+            <i class="bi bi-arrow-left"></i>
+          </button>
+          <button class="btn btn-dark" data-bs-target="#carouselSolar" data-bs-slide="next" aria-label="Siguiente">
+            <i class="bi bi-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <div id="carouselSolar" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+          <button type="button" data-bs-target="#carouselSolar" data-bs-slide-to="0" class="active" aria-current="true"
+            aria-label="Slide 1"></button>
+          <button type="button" data-bs-target="#carouselSolar" data-bs-slide-to="1" aria-label="Slide 2"></button>
+          <button type="button" data-bs-target="#carouselSolar" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner rounded-4 overflow-hidden shadow">
+          <div class="carousel-item active" data-bs-interval="4500">
+            <img src="./assets/panelCasa.jpg"
+              alt="Paneles en techo residencial" class="d-block w-100 carousel-img" />
+            <div class="carousel-caption d-none d-md-block">
+              <h5>Instalación residencial</h5>
+              <p>Sistemas dimensionados a tu consumo real.</p>
+            </div>
+          </div>
+          <div class="carousel-item" data-bs-interval="4500">
+            <img src="./assets/parqueSolar.jpg"
+              alt="Parque solar a gran escala" class="d-block w-100 carousel-img" />
+            <div class="carousel-caption d-none d-md-block">
+              <h5>Parques solares</h5>
+              <p>Generación limpia para ciudades enteras.</p>
+            </div>
+          </div>
+          <div class="carousel-item" data-bs-interval="4500">
+            <img src="./assets/monitoreoProd.jpg"
+              alt="Monitoreo de producción" class="d-block w-100 carousel-img" />
+            <div class="carousel-caption d-none d-md-block">
+              <h5>Monitoreo inteligente</h5>
+              <p>Revisa tu producción desde cualquier lugar.</p>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselSolar" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselSolar" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Siguiente</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA SIMPLE -->
+  <section class="py-5">
+    <div class="container">
+      <div class="row align-items-center g-4">
+        <div class="col-12 col-lg-8">
+          <h3 class="mb-1 fw-bold">¿Listo para empezar a generar tu propia energía?</h3>
+          <p class="mb-0 text-secondary">Te acompañamos en diagnóstico, instalación y mantenimiento.</p>
+        </div>
+        <div class="col-12 col-lg-4 text-lg-end">
+          <a href="#contacto" class="btn btn-primary btn-lg w-100 w-lg-auto">Agendar una llamada</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section id="contacto" class="py-5 bg-light">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="section-title">Cotiza sin costo</h2>
+        <p class="text-secondary">Déjanos tus datos y te contactamos hoy mismo.</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-12 col-lg-6">
+          <div class="p-4 rounded-4 bg-white contact-card">
+            <form class="row g-3" id="formCotiza">
+              <div class="col-12">
+                <label class="form-label">Nombre completo</label>
+                <input type="text" class="form-control" placeholder="Ej. Ana Pérez" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Correo</label>
+                <input type="email" class="form-control" placeholder="tucorreo@ejemplo.com" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Teléfono</label>
+                <input type="tel" class="form-control" placeholder="55 1234 5678" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Mensaje</label>
+                <textarea class="form-control" rows="4" placeholder="Cuéntanos tu consumo o dudas..."></textarea>
+              </div>
+              <div class="col-12 d-grid d-md-block">
+                <button type="submit" class="btn btn-primary btn-lg">
+                  <i class="bi bi-send me-2"></i>Enviar
+                </button>
+              </div>
+              <div class="form-text">Protegemos tus datos. No compartimos tu información.</div>
+            </form>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+          <div class="p-4 rounded-4 h-100 border">
+            <h5 class="fw-bold">Incluye en tu cotización:</h5>
+            <ul class="mt-3">
+              <li class="mb-2">Promedio de tu recibo de luz (últimos 3 meses).</li>
+              <li class="mb-2">Horario de mayor consumo.</li>
+              <li class="mb-2">Tipo de inmueble (casa, comercio, industria).</li>
+            </ul>
+            <hr />
+            <h6 class="fw-bold">Atención en todo México</h6>
+            <p class="text-secondary mb-1"><i class="bi bi-geo-alt me-2"></i>Monterrey, CDMX, Guadalajara y más.</p>
+            <p class="text-secondary mb-0"><i class="bi bi-clock me-2"></i>Lun - Sáb: 9:00 a 19:00</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer-landing py-4">
+    <div class="container d-flex flex-column flex-lg-row align-items-center justify-content-between gap-3">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-sun-fill"></i>
+        <span>© <span id="landingYear"></span> SunTecMX. Todos los derechos reservados.</span>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- Back to top -->
+  <button id="backToTop" class="btn btn-dark position-fixed btt-landing" aria-label="Volver arriba">
+    <i class="bi bi-arrow-up-short fs-3"></i>
+  </button>
+
 </div>
