@@ -3,6 +3,7 @@ import { login } from "../../core/auth.js";
 
 export async function render(root) {
   root.innerHTML = await renderHTML("./screens/login/login.html");
+
   const form = root.querySelector("#formLogin");
   const passwordInput = root.querySelector("#passwordInput");
   const togglePassword = root.querySelector("#togglePassword");
@@ -12,53 +13,46 @@ export async function render(root) {
     e.preventDefault();
     const email = form.email.value.trim();
     const password = form.password.value.trim();
-
     if (!email || !password) {
-      Swal.fire({
-        icon: "warning",
-        title: "Campos requeridos",
-        text: "Debes ingresar correo y contraseña",
-      });
+      Swal.fire({ icon: "warning", title: "Campos requeridos", text: "Debes ingresar correo y contraseña" });
       return;
     }
 
     const originalHTML = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = `
-      <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-      Ingresando...
-    `;
+    btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status"></span>Ingresando...`;
 
     try {
-      await login(email, password);
+      // login() debe devolver { idToken, refreshToken, uid, expiresIn }
+      const r = await login(email, password);
 
-      // ✅ Alerta automática (sin botón, se cierra sola)
+      // Persistencia: idToken y shadow a authToken (para el guard y para SSE)
+      if (r?.idToken) {
+        localStorage.setItem("idToken", r.idToken);
+        localStorage.setItem("authToken", r.idToken);
+      } else {
+        // fallback legacy
+        localStorage.setItem("authToken", "ok");
+      }
+
+      // Perfil básico para topbar
+      const user = inferUserFromEmail(email);
+      localStorage.setItem("user", JSON.stringify(user));
+
       Swal.fire({
         icon: "success",
         title: "¡Bienvenido!",
-        text: "Inicio de sesión correcto",
-        showConfirmButton: false,   // 👈 oculta el botón
-        timer: 1800,                // ⏱ se cierra automáticamente en 1.8s
-        timerProgressBar: true,     // barra de tiempo opcional
-        didClose: () => {
-          // redirección automática cuando se cierre
-          location.replace("#/home");
-        },
-      });
-
+        showConfirmButton: false,
+        timer: 900,
+      }).then(() => location.replace("#/dashboard"));
     } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "Error en el login",
-        text: "Credenciales inválidas",
-      });
+      Swal.fire({ icon: "error", title: "Error en el login", text: "Credenciales inválidas" });
     } finally {
       btn.disabled = false;
       btn.innerHTML = originalHTML;
     }
   });
 
-  // Mostrar/ocultar contraseña
   if (togglePassword && passwordInput) {
     togglePassword.addEventListener("click", () => {
       const toText = passwordInput.type === "password";
@@ -68,3 +62,12 @@ export async function render(root) {
     });
   }
 }
+
+function inferUserFromEmail(email) {
+  const userPart = (email || "").split("@")[0] || "";
+  const parts = userPart.split(/[.\-_ ]+/).filter(Boolean);
+  const first = parts[0] ? capitalize(parts[0]) : "Usuario";
+  const last  = parts[1] ? capitalize(parts[1]) : "";
+  return { firstName: first, lastName: last, email };
+}
+const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : s);

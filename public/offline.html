@@ -1,0 +1,125 @@
+<!-- /public/offline.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Sin conexión | SolarMX</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- estilos inline para que esto funcione 100% offline -->
+  <style>
+    :root{
+      --bg-start:#0a0f1a; /* mismo esquema del hero */
+      --bg-end:#0b1324;
+      --primary:#0d6efd;
+      --text:#e9eef7;
+      --muted:#9db0d3;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color: var(--text);
+      background:
+        radial-gradient(1200px 700px at 80% -10%, rgba(13,110,253,.25), transparent),
+        linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
+      display: grid;
+      place-items: center;
+    }
+    .card {
+      width: min(720px, 92vw);
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+      backdrop-filter: blur(6px);
+      text-align: center;
+    }
+    .brand {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-weight: 800; letter-spacing: .2px; font-size: 20px; color: #fff;
+      margin-bottom: 8px;
+    }
+    .logo {
+      width: 28px; height: 28px;
+      display: inline-block;
+    }
+    h1 {
+      margin: 8px 0 6px; font-size: clamp(22px, 3.2vw, 28px);
+    }
+    p.lead { margin: 0 0 14px; color: var(--muted); }
+    .hint { font-size: 14px; color: #c8d6f4; opacity: .85; }
+    .actions { display: flex; gap: 10px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
+    .btn {
+      appearance: none; border: 0; cursor: pointer; border-radius: 10px;
+      padding: 10px 16px; font-weight: 600;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-ghost   { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.18); }
+    .list {
+      text-align: left; margin: 18px auto 0; padding-left: 16px; max-width: 520px; color: #cfdaf5;
+    }
+    .pulse{
+      width: 84px; height: 84px; margin: 10px auto 18px; border-radius: 999px;
+      display: grid; place-items: center; position: relative; background: rgba(13,110,253,.08);
+      border: 1px solid rgba(255,255,255,.1);
+    }
+    .dot{
+      width: 14px; height: 14px; border-radius: 50%; background: var(--primary);
+      box-shadow: 0 0 0 0 rgba(13,110,253,.55); animation: ping 1.6s infinite;
+    }
+    @keyframes ping {
+      0% { box-shadow: 0 0 0 0 rgba(13,110,253,.55) }
+      80% { box-shadow: 0 0 0 22px rgba(13,110,253,0) }
+      100% { box-shadow: 0 0 0 22px rgba(13,110,253,0) }
+    }
+    footer { margin-top: 16px; font-size: 12px; color: #aab8d6; opacity: .8; }
+    a { color: #bcd6ff; }
+  </style>
+</head>
+<body>
+  <main class="card" role="main" aria-labelledby="offline-title">
+    <div class="brand">
+      <!-- pequeño sol en SVG inline para no depender de assets -->
+      <svg class="logo" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="4.5" fill="#ffd056"/>
+        <g stroke="#ffd056" stroke-width="1.6" stroke-linecap="round">
+          <path d="M12 1.7v2.8M12 19.5v2.8M4.5 4.5l2 2M17.5 17.5l2 2M1.7 12h2.8M19.5 12h2.8M4.5 19.5l2-2M17.5 6.5l2-2"/>
+        </g>
+      </svg>
+      SolarMX
+    </div>
+
+    <div class="pulse"><span class="dot"></span></div>
+
+    <h1 id="offline-title">Estás sin conexión</h1>
+    <p class="lead">No pudimos cargar algunos recursos. Puedes navegar lo que esté en caché o reintentar.</p>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="retry">Reintentar</button>
+      <a class="btn btn-ghost" href="#/home">Ir al inicio</a>
+    </div>
+
+    <ul class="list">
+      <li>Si el problema persiste, verifica tu conexión a Internet.</li>
+      <li>El contenido que ya visitaste podría seguir disponible sin conexión.</li>
+    </ul>
+
+    <footer>Modo sin conexión — provisto por tu Service Worker.</footer>
+  </main>
+
+  <script>
+    // Reintentar: vuelve a pedir la misma URL que trajo este offline.html
+    document.getElementById('retry')?.addEventListener('click', () => {
+      // Si venías de una navegación, intenta volver allí:
+      if (document.referrer && new URL(document.referrer).origin === location.origin) {
+        location.href = document.referrer;
+      } else {
+        location.reload();
+      }
+    });
+  </script>
+</body>
+</html>

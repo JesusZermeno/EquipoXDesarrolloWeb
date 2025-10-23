@@ -35,6 +35,7 @@ build/
 # ───────────────────────────────
 /api/serviceAccountKey.json
 /api/.env
+/api/keys/suntec-service-account.json
 
 # ───────────────────────────────
 # OS Specific
