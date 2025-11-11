@@ -5,6 +5,12 @@ import cors from 'cors';
 import fetch from 'node-fetch';
 import admin from 'firebase-admin';
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = path.dirname(__filename);
+const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 
 const app = express();
 app.use(cors({ origin: true }));
@@ -56,13 +62,16 @@ function getSunTecDb() {
 async function authGuard(req, res, next) {
   try {
     const authHeader = req.headers.authorization || '';
-    const token = authHeader.startsWith('Bearer ') ? authHeader.slice('Bearer '.length) : null;
+    const headerToken = authHeader.startsWith('Bearer ') ? authHeader.slice('Bearer '.length) : null;
+    const queryToken  = req.query.token ? String(req.query.token) : null;
+    const token = headerToken || queryToken;
+
     if (!token) return res.status(401).json({ error: 'No token provided' });
 
     const decoded = await admin.auth().verifyIdToken(token);
     req.user = decoded;
     next();
-  } catch {
+  } catch (e) {
     return res.status(401).json({ error: 'Invalid or expired token' });
   }
 }
@@ -189,14 +198,22 @@ app.get('/devices/:deviceId/state', authGuard, async (req, res) => {
 /* -------------------- Devices (SunTec): SSE tiempo real -------------------- */
 app.get('/devices/:deviceId/state/stream', async (req, res) => {
   try {
-    const idToken = req.query.token;
+    // auth (query ?token=... o header Authorization)
+    const authHeader = req.headers.authorization || '';
+    const headerToken = authHeader.startsWith('Bearer ') ? authHeader.slice('Bearer '.length) : null;
+    const idToken = String(req.query.token || headerToken || '');
     if (!idToken) return res.status(401).end();
-    await admin.auth().verifyIdToken(String(idToken)); // valida contra mi-app-vanilla
+    await admin.auth().verifyIdToken(idToken);
 
     res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
     res.setHeader('Cache-Control', 'no-cache, no-transform');
     res.setHeader('Connection', 'keep-alive');
     res.flushHeaders?.();
+
+    // keep-alive cada 25s
+    const ping = setInterval(() => {
+      if (!res.writableEnded) res.write(': keep-alive\n\n');
+    }, 25000);
 
     const { deviceId } = req.params;
     const db = getSunTecDb();
@@ -224,12 +241,23 @@ app.get('/devices/:deviceId/state/stream', async (req, res) => {
       );
 
     req.on('close', () => {
+      clearInterval(ping);
       try { unsub(); } catch {}
       res.end();
     });
   } catch {
     res.status(401).json({ error: 'Unauthorized' });
   }
+});
+
+/* -------------------- Servir el FRONT -------------------- */
+// Sirve /public tanto en /public como en raíz
+app.use('/public', express.static(PUBLIC_DIR, { maxAge: '1h', etag: true }));
+app.use(express.static(PUBLIC_DIR, { maxAge: '1h', etag: true }));
+
+// index
+app.get('/', (_req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
 });
 
 /* -------------------- Health -------------------- */
