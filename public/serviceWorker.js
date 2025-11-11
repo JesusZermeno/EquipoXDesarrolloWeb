@@ -1,14 +1,15 @@
 // /public/serviceWorker.js
-const VERSION       = 'v1.0.5';                 
-const CACHE_PREFIX  = 'dev-suntec';             
+const VERSION         = 'v1.0.6';
+const CACHE_PREFIX    = 'dev-suntec';
 const APP_SHELL_CACHE = `${CACHE_PREFIX}:app-shell:${VERSION}`;
 const RUNTIME_CACHE   = `${CACHE_PREFIX}:runtime:${VERSION}`;
 
 // Rutas precachear (App Shell)
 const appShell = [
-  // base
+  // base (ambas por si el navegador resuelve por raíz)
   '/public/',
   '/public/index.html',
+  '/index.html',
 
   // manifest + iconos PWA
   '/public/manifest.json',
@@ -17,7 +18,7 @@ const appShell = [
   '/public/assets/icons/icon-512.png',
   '/public/assets/icons/icon-512-maskable.png',
 
-  // favicon / logos en pestaña/splash/login
+  // favicon / logos
   '/public/assets/logo3.png',
   '/public/assets/logo.png',
 
@@ -30,6 +31,7 @@ const appShell = [
   '/public/core/guards.js',
   '/public/core/auth.js',
   '/public/core/layout.js',
+  '/public/core/db.js',
 
   // utils
   '/public/utils/dom.js',
@@ -47,7 +49,7 @@ const appShell = [
   '/public/screens/login/login.html',
   '/public/screens/login/login.js',
 
-  // imágenes locales HOME 
+  // imágenes locales HOME (verifica nombres reales)
   '/public/assets/hero.png',
   '/public/assets/panelCasa.jpg',
   '/public/assets/casaPanel.png',
@@ -55,15 +57,14 @@ const appShell = [
   '/public/assets/monProd.png',
 
   // fallback offline
-  '/public/offline.html',
+  '/public/offline.html'
 ];
 
-// Helpers
 const isStaticExt = (url) =>
   /\.(?:js|css|json|png|jpg|jpeg|gif|svg|webp|ico|woff2?|ttf|map|mp4|webm)$/i
     .test(url.pathname);
 
-// ----- INSTALL: precache del App Shell -----
+// INSTALL
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(APP_SHELL_CACHE)
@@ -72,31 +73,27 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// ----- ACTIVATE: limpia caches viejos (otros VERSION o sin prefijo) -----
+// ACTIVATE: limpia caches viejos
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
-      const allowed = new Set([APP_SHELL_CACHE, RUNTIME_CACHE]);
-      return Promise.all(
-        keys.map((k) => {
-          // Borra todo lo que no sea el runtime/app-shell actual
-          // y también cualquier caché que no empiece con el prefijo
-          if (!allowed.has(k) || !k.startsWith(`${CACHE_PREFIX}:`)) {
-            return caches.delete(k);
-          }
-          return Promise.resolve(false);
-        })
-      );
+      return Promise.all(keys.map((k) => {
+        const isCurrent = (k === APP_SHELL_CACHE || k === RUNTIME_CACHE);
+        const hasPrefix = k.startsWith(`${CACHE_PREFIX}:`);
+        if (!isCurrent && hasPrefix) {
+          return caches.delete(k);
+        }
+        return Promise.resolve(false);
+      }));
     }).then(() => self.clients.claim())
   );
 });
 
-// ----- FETCH -----
+// FETCH
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  // 1) Navegaciones (HTML) -> Network-first, luego cache, luego offline.html
   const isNavigation = req.mode === 'navigate' && !isStaticExt(url);
   if (isNavigation) {
     event.respondWith((async () => {
@@ -105,7 +102,7 @@ self.addEventListener('fetch', (event) => {
         const runtime = await caches.open(RUNTIME_CACHE);
         runtime.put(req, resp.clone());
         return resp;
-      } catch (err) {
+      } catch {
         const cached = await caches.match(req);
         return cached || caches.match('/public/offline.html');
       }
@@ -113,20 +110,17 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2) Estáticos (incluye .js, .css, imágenes, etc.) -> Cache-first con revalidación
   event.respondWith((async () => {
     const cached = await caches.match(req);
     if (cached) return cached;
     try {
       const resp = await fetch(req);
       const runtime = await caches.open(RUNTIME_CACHE);
-      // Evitar cachear opacas si no quieres (CORS)
       if (resp.type === 'basic' || resp.type === 'default') {
         runtime.put(req, resp.clone());
       }
       return resp;
     } catch (err) {
-      // Si falla la red, da lo que haya en cache (si hay)
       if (cached) return cached;
       throw err;
     }

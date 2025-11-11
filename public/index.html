@@ -21,22 +21,21 @@
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
     crossorigin="anonymous" />
-
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
-
-  <!-- Tu tema (cache-bust para evitar caché) -->
+  <!-- Tema -->
   <link rel="stylesheet" href="./styles/theme.css?v=12" />
+
+  <!-- Chart.js (antes del router para evitar 'Chart is not defined') -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
 </head>
 
 <body>
-  <!-- Aquí se inyectan los screens -->
   <div id="app"></div>
 
   <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
     crossorigin="anonymous"></script>
-
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -47,7 +46,6 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        // index.html está en /public ⇒ rutas relativas a /public
         navigator.serviceWorker
           .register('./serviceWorker.js', { scope: './' })
           .then(reg => console.log('SW listo en:', reg.scope))
