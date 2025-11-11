@@ -1,4 +1,4 @@
-:root {
+/* :root {
   --indigo-600: #4f46e5;
   --indigo-700: #4338ca;
   --indigo-900: #312e81;
@@ -11,7 +11,21 @@
     var(--indigo-600) 50%,
     var(--indigo-900) 100%
   );
+} */
+
+:root{
+  --hero-start: #0a0f1a;
+  --hero-end:   #0b1324;
+  --hero-accent:#0d6efd; /* opcional, por si luego usas glow */
 }
+
+.bg-splash{
+  background:
+    radial-gradient(1200px 700px at 80% -10%, rgba(13,110,253,.25), transparent),
+    linear-gradient(180deg, var(--hero-start) 0%, var(--hero-end) 100%);
+}
+
+
 
 /* Icono ojo (inputs password) */
 .password-icon { font-size: 1.5rem; color: #000; cursor: pointer; }
@@ -29,7 +43,6 @@
 #sidebar.offcanvas {
   background-color: #1b2c4b !important;
   color: #fff !important;
-  /* ← estos dos quitan la franja (padding nativo del offcanvas) */
   --bs-offcanvas-padding-x: 0 !important;
   --bs-offcanvas-padding-y: 0 !important;
 }
@@ -38,14 +51,14 @@
   background-color: inherit !important;
   color: inherit !important;
 }
-#sidebar .offcanvas-body { padding: 0 !important; } /* por si acaso */
+#sidebar .offcanvas-body { padding: 0 !important; }
 
 /* Links del menú (que cubran TODO el ancho) */
 #sidebar nav ul { padding-left: 0; margin: 0; }
 #sidebar nav li { margin: 0; }
 
 #sidebar .nav-link-sidebar {
-  display: block;          /* ocupa todo el ancho */
+  display: block;
   width: 100%;
   padding: 10px 16px;
   color: rgba(255,255,255,.85);
@@ -84,67 +97,48 @@
 
 /* Contenido (móvil por defecto) */
 .dashboard main {
-  padding: 80px 16px 16px;        /* espacio para topbar en móvil */
+  padding: 80px 16px 16px;
   background: #f5f6fa;
-  min-height: calc(100vh - 60px - 40px); /* 100% de la pantalla menos topbar (60px) y footer aprox (40px) */
+  min-height: calc(100vh - 60px - 40px);
   display: flex;
   flex-direction: column;
 }
 
 /* Forzar que contentMount se expanda */
-#contentMount {
-  flex: 1 0 auto;
-}
+#contentMount { flex: 1 0 auto; }
 
 /* Evitar desbordes horizontales */
 html, body { overflow-x: hidden; height: 100%; }
 
-/* ——— Responsive (≤ 991.98px): ocupar todo el ancho ——— */
+/* ——— Responsive (≤ 991.98px) ——— */
 @media (max-width: 991.98px) {
   .dashboard main {
-    padding: 0px 0 0 !important; /* solo espacio arriba para topbar */
-    min-height: calc(100vh - 60px - 40px); /* mantener altura completa */
+    padding: 0px 0 0 !important;
+    min-height: calc(100vh - 60px - 40px);
   }
-
-  .container-fluid {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
-
-  .row {
-    --bs-gutter-x: 0 !important;
-    --bs-gutter-y: 0 !important;
-  }
-
-  [class*="col-"] {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
+  .container-fluid { padding-left: 0 !important; padding-right: 0 !important; }
+  .row { --bs-gutter-x: 0 !important; --bs-gutter-y: 0 !important; }
+  [class*="col-"] { padding-left: 0 !important; padding-right: 0 !important; }
 }
 
-/* ——— Desktop (≥ lg): sidebar fijo + layout estable ——— */
+/* ——— Desktop (≥ lg) ——— */
 @media (min-width: 992px) {
-  /* El offcanvas se vuelve panel fijo y visible */
   #sidebar.offcanvas {
     position: fixed !important;
-    inset: 0 auto 0 0 !important;   /* top:0; right:auto; bottom:0; left:0 */
+    inset: 0 auto 0 0 !important;
     width: 240px !important;
     height: 100vh !important;
-    transform: none !important;     
+    transform: none !important;
     visibility: visible !important;
     border-right: none !important;
     box-shadow: none !important;
     z-index: 1030 !important;
   }
-
-  /* Reserva el espacio del sidebar en el flujo */
   #sidebarMount {
     width: 240px;
     flex: 0 0 240px;
-    background: #1b2c4b;            
+    background: #1b2c4b;
   }
-
-  /* Topbar a la derecha del sidebar */
   .topbar {
     position: fixed !important;
     top: 0 !important;
@@ -152,8 +146,6 @@ html, body { overflow-x: hidden; height: 100%; }
     right: 0 !important;
     z-index: 1040 !important;
   }
-
-  /* Contenido en desktop */
   .dashboard main {
     margin-left: 0 !important;
     padding: 80px 24px 24px !important;
@@ -161,78 +153,122 @@ html, body { overflow-x: hidden; height: 100%; }
   }
 }
 
-
-/* Escenario con perspectiva para el efecto de profundidad */
-.splash-stage {
-  perspective: 1000px;             /* activa la percepción 3D */
-  perspective-origin: 50% 50%;
-}
-
-/* Logo: entra desde "atrás", borroso y transparente, y se asienta */
+/* ===== Splash anim ===== */
+.splash-stage { perspective: 1000px; perspective-origin: 50% 50%; }
 .logo-anim-3d {
   width: min(20vw, 220px);
   transform-style: preserve-3d;
   animation:
     splash-depth-in 850ms cubic-bezier(.18,.9,.25,1) 60ms both,
-    splash-float 3200ms ease-in-out 980ms infinite; /* flotación sutil después de entrar */
+    splash-float 3200ms ease-in-out 980ms infinite;
   will-change: transform, filter, opacity;
 }
+.spinner-appear { opacity: 0; animation: spinner-fade 420ms ease-out 450ms forwards; }
+.spinner-rotate { animation: spinner-rot 0.75s linear infinite, spinner-fade 420ms ease-out 450ms forwards; }
 
-/* Aparición suave del spinner */
-.spinner-appear {
-  opacity: 0;
-  animation: spinner-fade 420ms ease-out 450ms forwards;
-}
-
-/* Giro continuo del spinner (por si no usas Bootstrap JS/CSS completo) */
-.spinner-rotate {
-  /* Si Bootstrap ya lo gira, esto no rompe nada */
-  animation: spinner-rot 0.75s linear infinite, spinner-fade 420ms ease-out 450ms forwards;
-}
-
-/* ====== Keyframes ====== */
-
-/* Profundidad: de lejos (Z negativo), pequeño, borroso y transparente -> posición real */
 @keyframes splash-depth-in {
-  0% {
-    transform: translateZ(-260px) scale(0.86) translateY(8px);
-    opacity: 0;
-    filter: blur(10px);
-  }
-  55% {
-    transform: translateZ(40px) scale(1.04) translateY(-3px); /* leve sobrepaso */
-    opacity: 1;
-    filter: blur(1.5px);
-  }
-  100% {
-    transform: translateZ(0) scale(1) translateY(0);
-    opacity: 1;
-    filter: blur(0);
-  }
+  0% { transform: translateZ(-260px) scale(0.86) translateY(8px); opacity: 0; filter: blur(10px); }
+  55% { transform: translateZ(40px) scale(1.04) translateY(-3px); opacity: 1; filter: blur(1.5px); }
+  100% { transform: translateZ(0) scale(1) translateY(0); opacity: 1; filter: blur(0); }
 }
-
-/* Flotación muy sutil (opcional) */
-@keyframes splash-float {
-  0%   { transform: translateZ(0) translateY(0); }
-  50%  { transform: translateZ(0) translateY(-6px); }
-  100% { transform: translateZ(0) translateY(0); }
-}
-
-/* Fade-in del spinner */
-@keyframes spinner-fade {
-  to { opacity: 1; }
-}
-
-/* Rotación del spinner (fallback o refuerzo) */
-@keyframes spinner-rot {
-  to { transform: rotate(360deg); }
-}
-
-/* Respeto a usuarios con reducción de movimiento */
+@keyframes splash-float { 0% {transform: translateZ(0) translateY(0);} 50% {transform: translateY(-6px);} 100% {transform: translateY(0);} }
+@keyframes spinner-fade { to { opacity: 1; } }
+@keyframes spinner-rot { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) {
-  .logo-anim-3d,
-  .spinner-appear,
-  .spinner-rotate {
-    animation: none !important;
+  .logo-anim-3d, .spinner-appear, .spinner-rotate { animation: none !important; }
+}
+
+/* ===== Landing (azul/blanco/negro) ===== */
+:root{
+  --landing-primary:#0d6efd;
+  --landing-primary-600:#0b5ed7;
+  --landing-black:#0b0d12;
+  --landing-white:#ffffff;
+  --landing-bg:#0a0f1a;
+  --landing-muted:#e9eef7;
+  --landing-ring: rgba(13,110,253,.25);
+}
+
+.landing .section-title{ font-weight:800; letter-spacing:.2px; }
+.shadow-smooth{ box-shadow:0 10px 30px rgba(13,110,253,.15); }
+
+/* HERO */
+.hero-landing{
+  background: radial-gradient(1200px 700px at 80% -10%, rgba(13,110,253,.25), transparent),
+              linear-gradient(180deg, var(--landing-bg) 0%, #0b1324 100%);
+  color:var(--landing-white);
+  position:relative; overflow:hidden;
+}
+.hero-landing .hero-glow{
+  position:absolute; inset:auto -10% -25% -10%; height:60vh; pointer-events:none;
+  background: radial-gradient(closest-side, rgba(13,110,253,.35), transparent 60%);
+  filter: blur(60px);
+}
+.landing .badge-soft{ background:rgba(13,110,253,.15); color:#bcd6ff; }
+.landing .text-hero{ color:#dbe6ff; }
+
+/* FEATURES */
+.card-feature{
+  border:1px solid #0e1a32; background:rgba(255,255,255,.02);
+  color:#dbe6ff; backdrop-filter: blur(6px); border-radius:.75rem;
+}
+.card-feature .icon{
+  width:52px; height:52px; border-radius:12px; display:grid; place-items:center;
+  background:var(--landing-white); box-shadow:0 6px 24px rgba(13,110,253,.25);
+  margin-bottom:.75rem;
+}
+.text-muted-2{ color:#8aa0c7 !important; }
+.check{ color:var(--landing-primary); }
+
+/* Carousel */
+.carousel-img{ object-fit:cover; height:420px; }
+.carousel-caption{ background:rgba(0,0,0,.45); border-radius:.75rem; }
+
+/* Contacto */
+.contact-card{ border:1px solid #dfe7ff; }
+.contact-card .form-control:focus{ box-shadow:0 0 0 .25rem var(--landing-ring); }
+
+/* Footer */
+.footer-landing{ background:var(--landing-black); color:#a7b3c9; }
+.footer-landing a{ color:#cfe1ff; }
+
+/* Botón volver arriba */
+.btt-landing{ right:1rem; bottom:1rem; display:none; }
+
+/* Botones */
+.landing .btn-primary{ background:var(--landing-primary); border-color:var(--landing-primary); }
+.landing .btn-primary:hover{ background:var(--landing-primary-600); border-color:var(--landing-primary-600); }
+
+/* Anclas suaves dentro de landing */
+.landing section, .landing header{ scroll-margin-top: 70px; }
+
+/* ====== Navbar Landing (transparente arriba, negro al scrollear) ====== */
+/* ARRIBA: transparente */
+nav#landingNav.landing-navbar{
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  --bs-bg-opacity: 0 !important;
+  transition: background-color .25s ease, box-shadow .25s ease, backdrop-filter .25s ease;
+}
+
+/* SCROLL: negro con sombra (super específico) */
+.landing nav#landingNav.landing-navbar.scrolled,
+nav#landingNav.landing-navbar.scrolled{
+  background: rgba(0,0,0,.96) !important;
+  background-color: rgba(0,0,0,.96) !important;
+  box-shadow: 0 6px 24px rgba(0,0,0,.22) !important;
+  --bs-bg-opacity: 1 !important;
+  backdrop-filter: saturate(180%) blur(6px);
+}
+
+/* Móvil: cuando el menú está abierto, fondo negro para legibilidad */
+@media (max-width: 991.98px){
+  .landing nav#landingNav .navbar-collapse.show{
+    background: rgba(0,0,0,.96) !important;
   }
 }
+
+/* Asegura espacio del hero por navbar fijo */
+.hero-landing{ padding-top: 6rem; }
+

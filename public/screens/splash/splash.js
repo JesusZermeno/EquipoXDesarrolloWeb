@@ -4,6 +4,10 @@ export async function render(root) {
   const html = await renderHTML("./screens/splash/splash.html");
   root.innerHTML = html;
 
-  // Pequeño delay y redirección al login
-  setTimeout(() => { location.hash = "/login"; }, 3000);
+  // Después del splash, ve a HOME (si quieres saltar al dashboard cuando hay sesión, ver comentario abajo)
+  setTimeout(() => {
+    // Si prefieres: const hasSession = !!(localStorage.getItem("authToken") || sessionStorage.getItem("authToken"));
+    // location.hash = hasSession ? "/dashboard" : "/home";
+    location.hash = "/home";
+  }, 1500);
 }
