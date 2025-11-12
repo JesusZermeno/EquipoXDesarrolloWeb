@@ -6,7 +6,6 @@ import {
   addStatesBulk,
   getStatesByRange,
   getLastState,
-  pruneBefore,            // limpieza opcional
 } from "../../core/db.js";
 
 export async function render() {
@@ -16,19 +15,12 @@ export async function render() {
   // IndexedDB listo
   await initDB();
 
-  // Limpia datos viejos (opcional: conserva ~48 h)
-  try { await pruneBefore(hoursAgo(48)); } catch {}
-
   // Espejo de token para router/SSE
   const idt = localStorage.getItem("idToken") || sessionStorage.getItem("idToken");
   const aut = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
   if (!aut && idt) localStorage.setItem("authToken", idt);
 
   const deviceId = "mega01"; // cambia si tu device usa otro id
-
-  // 0) Warm-up: si hay red, precarga 24h/día a IDB para que
-  //    al recargar offline tengas puntos suficientes
-  await warmUpHistory(deviceId);
 
   // 1) KPIs: primera pintura con fallback a IDB
   await loadDeviceSummary({ deviceId });
@@ -81,7 +73,7 @@ function toTime(ms) {
   return new Date(ms).toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
 }
 function startOfToday() {
-  const d = new Date(); d.setHours(0, 0, 0, 0); return d;
+  const d = new Date(); d.setHours(0,0,0,0); return d;
 }
 function hoursAgo(n) {
   const d = new Date(); d.setHours(d.getHours() - n); return d;
@@ -172,14 +164,14 @@ function startRealtime(deviceId) {
 /* ===================== Pintado de KPIs ===================== */
 function targets() {
   return {
-    power:  document.getElementById("kpiPowerValue"),
-    powerTs:document.getElementById("kpiPowerTs"),
-    energy: document.getElementById("kpiEnergyValue"),
+    power:   document.getElementById("kpiPowerValue"),
+    powerTs: document.getElementById("kpiPowerTs"),
+    energy:  document.getElementById("kpiEnergyValue"),
     energyTs:document.getElementById("kpiEnergyTs"),
-    avail:  document.getElementById("kpiAvailValue"),
-    availTs:document.getElementById("kpiAvailTs"),
-    co2:    document.getElementById("kpiCO2Value"),
-    co2Ts:  document.getElementById("kpiCO2Ts"),
+    avail:   document.getElementById("kpiAvailValue"),
+    availTs: document.getElementById("kpiAvailTs"),
+    co2:     document.getElementById("kpiCO2Value"),
+    co2Ts:   document.getElementById("kpiCO2Ts"),
   };
 }
 function paintKpis(data) {
@@ -228,36 +220,7 @@ async function fetchStateRange({ deviceId, from, to, limit = 2000 }) {
   return data.items || [];
 }
 
-// Dibuja chart o un placeholder si no hay puntos suficientes,
-// y ajusta el estilo cuando hay pocas muestras.
-function renderSeriesOrEmpty(canvasId, cfg, minPoints = 2) {
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return null;
-
-  const points = (cfg?.data?.datasets?.[0]?.data?.length) || 0;
-  const wrap = canvas.parentElement;
-  let msg = wrap?.querySelector('.chart-empty-msg');
-
-  if (points < minPoints) {
-    // Oculta lienzo y muestra mensaje
-    canvas.style.display = 'none';
-    if (!msg) {
-      msg = document.createElement('div');
-      msg.className = 'chart-empty-msg text-center text-muted py-5';
-      msg.textContent = 'Sin datos suficientes (offline)';
-      wrap?.appendChild(msg);
-    }
-    return null;
-  } else {
-    if (msg) msg.remove();
-    canvas.style.display = 'block';
-    const onlyDots = points < 5; // 2..4 puntos: solo puntos
-    return ensureChartSmart(canvasId, cfg, { onlyDots });
-  }
-}
-
-// Crea/actualiza el chart con comportamiento inteligente para pocas muestras
-function ensureChartSmart(canvasId, { labels, datasetLabel, data }, { onlyDots = false } = {}) {
+function ensureLineChart(canvasId, { labels, datasetLabel, data }) {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return null;
 
@@ -274,8 +237,7 @@ function ensureChartSmart(canvasId, { labels, datasetLabel, data }, { onlyDots =
         tension: 0.25,
         fill: false,
         borderWidth: 2,
-        showLine: !onlyDots,           // sin línea si pocas muestras
-        pointRadius: onlyDots ? 4 : 0, // puntos visibles si pocas muestras
+        pointRadius: 0
       }]
     },
     options: {
@@ -290,8 +252,6 @@ function ensureChartSmart(canvasId, { labels, datasetLabel, data }, { onlyDots =
   if (chart) {
     chart.data.labels = labels;
     chart.data.datasets[0].data = data;
-    chart.data.datasets[0].showLine = cfg.data.datasets[0].showLine;
-    chart.data.datasets[0].pointRadius = cfg.data.datasets[0].pointRadius;
     chart.update('none');
   } else {
     chart = new Chart(canvas, cfg);
@@ -308,18 +268,18 @@ export async function loadCharts(deviceId) {
 
   // 1) Offline-first: pinta con IndexedDB
   let cached24 = await getStatesByRange(deviceId, +from24, +now, 5000);
-  cached24 = cached24.sort((a, b) => a.ts - b.ts);
+  cached24 = cached24.sort((a,b) => a.ts - b.ts);
   const c24 = downsample(cached24, 400);
-  renderSeriesOrEmpty('powerChart', {
+  ensureLineChart('powerChart', {
     labels: c24.map(x => toTime(x.ts)),
     datasetLabel: 'Potencia (W)',
     data: c24.map(x => Number(x.valor) || 0)
   });
 
   let cachedDay = await getStatesByRange(deviceId, +fromDay, +now, 5000);
-  cachedDay = cachedDay.sort((a, b) => a.ts - b.ts);
+  cachedDay = cachedDay.sort((a,b) => a.ts - b.ts);
   const cDay = downsample(cachedDay, 400);
-  renderSeriesOrEmpty('energyChart', {
+  ensureLineChart('energyChart', {
     labels: cDay.map(x => toTime(x.ts)),
     datasetLabel: 'Energía (kWh)',
     data: cDay.map(x => Number(x.nivel) || 0)
@@ -330,9 +290,9 @@ export async function loadCharts(deviceId) {
     const fresh24 = await fetchStateRange({ deviceId, from: from24, to: now, limit: 4000 });
     if (fresh24?.length) {
       await addStatesBulk(fresh24.map(x => ({ deviceId, ts: x.ts, valor: x.valor, nivel: x.nivel, estado: x.estado })));
-      const ord = fresh24.sort((a, b) => a.ts - b.ts);
+      const ord = fresh24.sort((a,b) => a.ts - b.ts);
       const comp = downsample(ord, 400);
-      renderSeriesOrEmpty('powerChart', {
+      ensureLineChart('powerChart', {
         labels: comp.map(x => toTime(x.ts)),
         datasetLabel: 'Potencia (W)',
         data: comp.map(x => Number(x.valor) || 0)
@@ -342,9 +302,9 @@ export async function loadCharts(deviceId) {
     const freshDay = await fetchStateRange({ deviceId, from: fromDay, to: now, limit: 4000 });
     if (freshDay?.length) {
       await addStatesBulk(freshDay.map(x => ({ deviceId, ts: x.ts, valor: x.valor, nivel: x.nivel, estado: x.estado })));
-      const ord = freshDay.sort((a, b) => a.ts - b.ts);
+      const ord = freshDay.sort((a,b) => a.ts - b.ts);
       const comp = downsample(ord, 400);
-      renderSeriesOrEmpty('energyChart', {
+      ensureLineChart('energyChart', {
         labels: comp.map(x => toTime(x.ts)),
         datasetLabel: 'Energía (kWh)',
         data: comp.map(x => Number(x.nivel) || 0)
@@ -374,28 +334,5 @@ function pushRealtimeToCharts(d) {
     ec.data.datasets[0].data.push(Number(d.nivel) || 0);
     if (ec.data.labels.length > 400) { ec.data.labels.shift(); ec.data.datasets[0].data.shift(); }
     ec.update('none');
-  }
-}
-
-/* ===================== Warm-up de histórico ===================== */
-async function warmUpHistory(deviceId) {
-  try {
-    const from24 = hoursAgo(24);
-    const now = new Date();
-    const fromDay = startOfToday();
-
-    const [h24, day] = await Promise.all([
-      fetchStateRange({ deviceId, from: from24, to: now, limit: 4000 }).catch(() => []),
-      fetchStateRange({ deviceId, from: fromDay, to: now, limit: 4000 }).catch(() => []),
-    ]);
-
-    const all = [...(h24 || []), ...(day || [])];
-    if (all.length) {
-      await addStatesBulk(
-        all.map(x => ({ deviceId, ts: x.ts, valor: x.valor, nivel: x.nivel, estado: x.estado }))
-      );
-    }
-  } catch {
-    // sin red o error: simplemente no se precarga
   }
 }
