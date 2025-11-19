@@ -197,7 +197,7 @@ function paintKpis(data) {
   if (el.avail)   el.avail.textContent   = `${fmtNumber(disponibilidad)} %`;
   if (el.availTs) el.availTs.textContent = `Estado: ${encendido ? "Encendido" : "Apagado"}`;
 
-  if (el.co2)     el.co2.textContent     = `${fmtNumber(co2, { maximumFractionDigits: 2 })} kg`;
+  if (el.co2)     el.co2.textContent     = `${fmtNumber(co2, { maximumFractionDigits: 2 })}`;
   if (el.co2Ts)   el.co2Ts.textContent   = `Basado en energía de hoy`;
 }
 function paintNoData() {
