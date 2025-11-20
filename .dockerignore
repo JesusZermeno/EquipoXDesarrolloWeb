@@ -10,7 +10,5 @@ Dockerfile
 api/.env
 
 # Ignorar llaves y credenciales
-api/keys/
-*.json
 *.pem
 *.key
