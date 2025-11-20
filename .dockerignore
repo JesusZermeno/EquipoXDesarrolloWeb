@@ -5,9 +5,6 @@ Dockerfile
 .git
 .gitignore
 
-# Ignorar variables de entorno
-.env
-api/.env
 
 # Ignorar llaves y credenciales
 *.pem
