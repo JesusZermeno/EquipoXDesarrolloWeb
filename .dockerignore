@@ -1,0 +1,16 @@
+api/node_modules
+npm-debug.log
+Dockerfile
+.dockerignore
+.git
+.gitignore
+
+# Ignorar variables de entorno
+.env
+api/.env
+
+# Ignorar llaves y credenciales
+api/keys/
+*.json
+*.pem
+*.key
