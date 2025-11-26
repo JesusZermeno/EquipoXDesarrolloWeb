@@ -69,15 +69,45 @@ async function authGuard(req, res, next) {
     if (!token) return res.status(401).json({ error: 'No token provided' });
 
     const decoded = await admin.auth().verifyIdToken(token);
-    req.user = decoded;
+    req.user = decoded; // aquí pueden venir customClaims.role
     next();
   } catch (e) {
     return res.status(401).json({ error: 'Invalid or expired token' });
   }
 }
 
+/* -------------------- Helpers de rol -------------------- */
+async function getRoleForUid(uid) {
+  // 1) custom claims
+  const userRecord = await admin.auth().getUser(uid).catch(() => null);
+  const claimRole = userRecord?.customClaims?.role;
+  if (claimRole) return claimRole;
+
+  // 2) documento Firestore users/{uid}.role
+  const doc = await vanillaDb.collection('users').doc(uid).get().catch(() => null);
+  const docRole = doc?.exists ? doc.data()?.role : undefined;
+  if (docRole) return docRole;
+
+  // 3) por defecto
+  return 'user';
+}
+
+async function requireAdmin(req, res, next) {
+  try {
+    const uid = req.user?.uid;
+    if (!uid) return res.status(401).json({ error: 'No UID' });
+
+    const role = await getRoleForUid(uid);
+    if (role !== 'admin') return res.status(403).json({ error: 'Admin only' });
+
+    next();
+  } catch (e) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+}
+
 /* -------------------- Auth & Users (mi-app-vanilla) -------------------- */
-// Registro
+// Registro (puedes deshabilitarlo si no lo usarás)
 app.post('/auth/register', async (req, res) => {
   try {
     const { email, password, displayName = '', nombre, apellidoP, apellidoM, fechaNac, telefono } = req.body;
@@ -92,16 +122,17 @@ app.post('/auth/register', async (req, res) => {
       apellidoM: apellidoM || '',
       fechaNac: fechaNac || '',
       telefono: telefono || '',
+      role: 'user', // default
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    res.json({ uid: user.uid, email });
+    res.json({ uid: user.uid, email, role: 'user' });
   } catch (e) {
     res.status(400).json({ error: e.message });
   }
 });
 
-// Login (REST con FIREBASE_API_KEY de mi-app-vanilla)
+// Login (REST con FIREBASE_API_KEY de mi-app-vanilla) → devuelve role
 app.post('/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -116,26 +147,59 @@ app.post('/auth/login', async (req, res) => {
     const data = await r.json();
     if (!r.ok) return res.status(r.status).json({ error: data.error?.message || 'Login failed' });
 
+    const role = await getRoleForUid(data.localId);
+
     res.json({
       idToken: data.idToken,
       refreshToken: data.refreshToken,
       uid: data.localId,
       expiresIn: data.expiresIn,
+      role,
     });
-  } catch {
+  } catch (e) {
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-// Perfil
+// Perfil (incluye role)
 app.get('/me', authGuard, async (req, res) => {
   try {
     const uid = req.user.uid;
+    const role = await getRoleForUid(uid);
     const doc = await vanillaDb.collection('users').doc(uid).get();
     const profile = doc.exists ? doc.data() : {};
-    res.json({ uid, email: req.user.email, profile });
-  } catch {
+    res.json({ uid, email: req.user.email, role, profile });
+  } catch (e) {
     res.status(500).json({ error: 'Error leyendo perfil' });
+  }
+});
+
+/* -------------------- Admin: setRole (admin only) -------------------- */
+/**
+ * POST /admin/setRole
+ * Headers: Authorization: Bearer <ID_TOKEN_ADMIN>
+ * Body: { uid?: string, email?: string, role: "admin"|"user" }
+ */
+app.post('/admin/setRole', authGuard, requireAdmin, async (req, res) => {
+  try {
+    const { uid, email, role } = req.body || {};
+    if (!role || !['admin', 'user'].includes(role)) {
+      return res.status(400).json({ error: 'role inválido' });
+    }
+
+    let target = uid;
+    if (!target && email) {
+      const byEmail = await admin.auth().getUserByEmail(email);
+      target = byEmail.uid;
+    }
+    if (!target) return res.status(400).json({ error: 'Provee uid o email' });
+
+    await admin.auth().setCustomUserClaims(target, { role });
+    await vanillaDb.collection('users').doc(target).set({ role }, { merge: true });
+
+    res.json({ ok: true, uid: target, role });
+  } catch (e) {
+    res.status(400).json({ error: e.message });
   }
 });
 
@@ -198,7 +262,6 @@ app.get('/devices/:deviceId/state', authGuard, async (req, res) => {
 /* -------------------- Devices (SunTec): SSE tiempo real -------------------- */
 app.get('/devices/:deviceId/state/stream', async (req, res) => {
   try {
-    // auth (query ?token=... o header Authorization)
     const authHeader = req.headers.authorization || '';
     const headerToken = authHeader.startsWith('Bearer ') ? authHeader.slice('Bearer '.length) : null;
     const idToken = String(req.query.token || headerToken || '');
@@ -210,7 +273,6 @@ app.get('/devices/:deviceId/state/stream', async (req, res) => {
     res.setHeader('Connection', 'keep-alive');
     res.flushHeaders?.();
 
-    // keep-alive cada 25s
     const ping = setInterval(() => {
       if (!res.writableEnded) res.write(': keep-alive\n\n');
     }, 25000);
@@ -251,11 +313,9 @@ app.get('/devices/:deviceId/state/stream', async (req, res) => {
 });
 
 /* -------------------- Servir el FRONT -------------------- */
-// Sirve /public tanto en /public como en raíz
 app.use('/public', express.static(PUBLIC_DIR, { maxAge: '1h', etag: true }));
 app.use(express.static(PUBLIC_DIR, { maxAge: '1h', etag: true }));
 
-// index
 app.get('/', (_req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
 });
