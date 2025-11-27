@@ -23,7 +23,25 @@ function readJsonFile(relativePath) {
 }
 
 /* -------------------- Firebase Admin: MI-APP-VANILLA (auth / users) -------------------- */
-const vanillaServiceAccount = readJsonFile('./serviceAccountKey.json');
+/**
+ * En producción (Render):
+ *   - usar variable de entorno VANILLA_SERVICE_ACCOUNT_JSON con el JSON completo.
+ * En local:
+ *   - usa el archivo ./serviceAccountKey.json
+ */
+let vanillaServiceAccount;
+
+if (process.env.VANILLA_SERVICE_ACCOUNT_JSON) {
+  try {
+    vanillaServiceAccount = JSON.parse(process.env.VANILLA_SERVICE_ACCOUNT_JSON);
+  } catch (e) {
+    console.error('[Vanilla] Error parseando VANILLA_SERVICE_ACCOUNT_JSON:', e);
+    process.exit(1);
+  }
+} else {
+  // Desarrollo local
+  vanillaServiceAccount = readJsonFile('./serviceAccountKey.json');
+}
 
 admin.initializeApp({
   credential: admin.credential.cert(vanillaServiceAccount),
@@ -31,12 +49,30 @@ admin.initializeApp({
 const vanillaDb = admin.firestore();
 
 /* -------------------- Firebase Admin secundario: SUNTEC (devices) -------------------- */
+/**
+ * En producción (Render):
+ *   - usar variable de entorno SUNTEC_SERVICE_ACCOUNT_JSON con el JSON completo.
+ * En local:
+ *   - usa el archivo ./keys/suntec-service-account.json
+ *     (o el path indicado en SUNTEC_SERVICE_ACCOUNT)
+ */
 let sunTecApp = null;
-let sunTecDb = null;
+let sunTecDb  = null;
 
 try {
-  const suntecSaPath = process.env.SUNTEC_SERVICE_ACCOUNT || './keys/suntec-service-account.json';
-  const suntecServiceAccount = readJsonFile(suntecSaPath);
+  let suntecServiceAccount;
+
+  if (process.env.SUNTEC_SERVICE_ACCOUNT_JSON) {
+    try {
+      suntecServiceAccount = JSON.parse(process.env.SUNTEC_SERVICE_ACCOUNT_JSON);
+    } catch (e) {
+      console.error('[SunTec] Error parseando SUNTEC_SERVICE_ACCOUNT_JSON:', e);
+      throw e;
+    }
+  } else {
+    const suntecSaPath = process.env.SUNTEC_SERVICE_ACCOUNT || './keys/suntec-service-account.json';
+    suntecServiceAccount = readJsonFile(suntecSaPath);
+  }
 
   sunTecApp = admin.initializeApp(
     {
@@ -53,7 +89,7 @@ try {
 
 function getSunTecDb() {
   if (!sunTecDb) {
-    throw new Error('SunTec DB no inicializada. Revisa SUNTEC_SERVICE_ACCOUNT / SUNTEC_PROJECT_ID.');
+    throw new Error('SunTec DB no inicializada. Revisa SUNTEC_SERVICE_ACCOUNT_JSON / SUNTEC_SERVICE_ACCOUNT / SUNTEC_PROJECT_ID.');
   }
   return sunTecDb;
 }
