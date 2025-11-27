@@ -8,6 +8,11 @@ import {
   getLastState,
 } from "../../core/db.js";
 
+// 🔹 Detecta automáticamente la URL base del backend
+// Local:  http://localhost:3000
+// Render: https://suntec-web.onrender.com
+const API_BASE = window.location.origin.replace(/\/+$/, '');
+
 export async function render() {
   await renderLayout("./screens/dashboard/dashboard.html");
   setupTopbar();
@@ -88,7 +93,8 @@ function downsample(items, target = 300) {
 
 /* ===================== KPIs (REST con fallback IDB) ===================== */
 async function loadDeviceSummary({ deviceId }) {
-  const API = `http://localhost:3000/devices/${encodeURIComponent(deviceId)}/state/last`;
+  // 🔹 antes: http://localhost:3000/...
+  const API = `${API_BASE}/devices/${encodeURIComponent(deviceId)}/state/last`;
   const token = getToken();
 
   const el = targets();
@@ -131,7 +137,8 @@ function startRealtime(deviceId) {
     try { window.__suntec.sse.close(); } catch {}
   }
 
-  const url = `http://localhost:3000/devices/${encodeURIComponent(deviceId)}/state/stream?token=${encodeURIComponent(token)}`;
+  // 🔹 antes: http://localhost:3000/...
+  const url = `${API_BASE}/devices/${encodeURIComponent(deviceId)}/state/stream?token=${encodeURIComponent(token)}`;
   const es = new EventSource(url);
   window.__suntec.sse = es;
 
@@ -209,7 +216,9 @@ function paintNoData() {
 /* ===================== Charts (Histórico + Realtime) ===================== */
 async function fetchStateRange({ deviceId, from, to, limit = 2000 }) {
   const token = getToken();
-  const url = new URL(`http://localhost:3000/devices/${encodeURIComponent(deviceId)}/state`);
+
+  // 🔹 antes: new URL("http://localhost:3000/devices/...")
+  const url = new URL(`${API_BASE}/devices/${encodeURIComponent(deviceId)}/state`);
   if (from) url.searchParams.set("from", String(+from));
   if (to)   url.searchParams.set("to",   String(+to));
   url.searchParams.set("limit", String(limit));
