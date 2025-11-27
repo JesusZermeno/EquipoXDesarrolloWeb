@@ -1,6 +1,9 @@
 import { renderHTML } from "../../utils/dom.js";
 import { login } from "../../core/auth.js";
 
+// Config: define aquí el correo del admin (fallback si el backend no manda role)
+const ADMIN_EMAIL = "admin@suntec.mx";
+
 export async function render(root) {
   root.innerHTML = await renderHTML("./screens/login/login.html");
 
@@ -23,28 +26,35 @@ export async function render(root) {
     btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status"></span>Ingresando...`;
 
     try {
-      // login() debe devolver { idToken, refreshToken, uid, expiresIn }
+      // login() debe devolver al menos { idToken, ... } y opcionalmente { role }
       const r = await login(email, password);
 
-      // Persistencia: idToken y shadow a authToken (para el guard y para SSE)
+      // Guarda espejo de token
       if (r?.idToken) {
         localStorage.setItem("idToken", r.idToken);
         localStorage.setItem("authToken", r.idToken);
       } else {
-        // fallback legacy
         localStorage.setItem("authToken", "ok");
       }
 
-      // Perfil básico para topbar
-      const user = inferUserFromEmail(email);
-      localStorage.setItem("user", JSON.stringify(user));
+      // Rol: usa r.role si viene del backend; si no, asume por correo
+      const role = (r?.role && String(r.role).toLowerCase()) ||
+                   (email.toLowerCase() === ADMIN_EMAIL.toLowerCase() ? "admin" : "user");
+      localStorage.setItem("role", role);
+
+      // Perfil sencillo para el topbar
+      const userObj = inferUserFromEmail(email);
+      localStorage.setItem("user", JSON.stringify(userObj));
 
       Swal.fire({
         icon: "success",
         title: "¡Bienvenido!",
         showConfirmButton: false,
-        timer: 900,
-      }).then(() => location.replace("#/dashboard"));
+        timer: 700,
+      }).then(() => {
+        location.replace(role === "admin" ? "#/admin" : "#/dashboard");
+      });
+
     } catch (err) {
       Swal.fire({ icon: "error", title: "Error en el login", text: "Credenciales inválidas" });
     } finally {

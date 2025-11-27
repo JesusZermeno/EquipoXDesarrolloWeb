@@ -12,14 +12,23 @@
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
   </div>
 
-  <div class="offcanvas-body p-0">
-    <nav class="sidebar-nav">
+  <div class="offcanvas-body p-0 d-flex flex-column">
+    <nav class="sidebar-nav flex-grow-1">
       <ul class="list-unstyled m-0">
-        <li class="mt-4"><a href="#/home" class="d-block py-2 px-4 nav-link-sidebar"><i class="bi bi-house me-2"></i> Dashboard</a></li>
-        <!-- <li><a href="#/stats" class="d-block py-2 px-4 nav-link-sidebar"><i class="bi bi-bar-chart me-2"></i> Estadísticas</a></li>
-        <li><a href="#/alerts" class="d-block py-2 px-4 nav-link-sidebar"><i class="bi bi-bell me-2"></i> Alertas</a></li>
-        <li><a href="#/settings" class="d-block py-2 px-4 nav-link-sidebar"><i class="bi bi-gear me-2"></i> Configuración</a></li> -->
+        <!-- Dashboard -->
+        <li class="mt-4">
+          <a href="#/dashboard" class="d-block py-2 px-4 nav-link-sidebar" data-link="dashboard">
+            <i class="bi bi-speedometer2 me-2"></i> Dashboard
+          </a>
+        </li>
       </ul>
     </nav>
+
+    <!-- Pie del sidebar -->
+    <div class="mt-auto border-top">
+      <a href="#/home" class="d-block py-2 px-4 nav-link-sidebar small" data-link="home">
+        <i class="bi bi-house-door me-2"></i> Ir a Inicio
+      </a>
+    </div>
   </div>
 </div>

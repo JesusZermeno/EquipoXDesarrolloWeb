@@ -6,12 +6,37 @@ export async function render(root) {
   mountLanding();
 }
 
+function hasSession() {
+  return !!(
+    localStorage.getItem('idToken') ||
+    localStorage.getItem('authToken') ||
+    sessionStorage.getItem('authToken')
+  );
+}
+
 function mountLanding() {
   // Año footer
   const y = document.getElementById('landingYear');
   if (y) y.textContent = new Date().getFullYear();
 
   const nav = document.getElementById('landingNav');
+
+  // Toggle CTA del navbar según sesión
+  const cta = document.getElementById('authCtaBtn');
+  const authed = hasSession();
+  if (cta) {
+    if (authed) {
+      cta.textContent = 'Ir al Dashboard';
+      cta.setAttribute('href', '#/dashboard');
+      cta.classList.remove('btn-primary');
+      cta.classList.add('btn-outline-light');
+    } else {
+      cta.textContent = 'Inicia sesión';
+      cta.setAttribute('href', '#/login');
+      cta.classList.remove('btn-outline-light');
+      cta.classList.add('btn-primary');
+    }
+  }
 
   // ==== MÉTODO A: ScrollY en window ====
   const getScrollY = () =>
@@ -31,7 +56,6 @@ function mountLanding() {
   window.addEventListener('resize', applyNavStateByScroll, { passive: true });
 
   // ==== MÉTODO B: IntersectionObserver sobre el hero ====
-  // Colocamos un sentinela al principio del hero; si deja de verse, pintamos nav.
   const hero = document.querySelector('.hero-landing');
   if (hero && 'IntersectionObserver' in window) {
     const sentinel = document.createElement('div');
@@ -47,7 +71,6 @@ function mountLanding() {
     const io = new IntersectionObserver(
       (entries) => {
         const e = entries[0];
-        // Si el top del hero ya no está a la vista (isIntersecting=false), añade 'scrolled'
         if (e.isIntersecting) nav?.classList.remove('scrolled');
         else nav?.classList.add('scrolled');
       },
@@ -56,7 +79,7 @@ function mountLanding() {
     io.observe(sentinel);
   }
 
-  // Estado inicial (por si carga en medio de la página)
+  // Estado inicial
   applyNavStateByScroll();
 
   // Volver arriba
@@ -80,7 +103,7 @@ function mountLanding() {
     });
   }
 
-  // Interceptar anclas internas para scroll suave (sin disparar el router)
+  // Interceptar anclas internas (sin router)
   const landingRoot = document.querySelector('.landing');
   if (landingRoot) {
     landingRoot.querySelectorAll('a[href^="#"]:not([href^="#/"])').forEach(a => {
