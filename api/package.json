@@ -3,7 +3,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "node server.js",
+    "dev": "node api/server.js",
+    "seed:admin": "node api/scripts/seedAdmin.js"
     "start": "node server.js"
   },
   "dependencies": {
