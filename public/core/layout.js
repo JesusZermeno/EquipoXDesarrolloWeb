@@ -1,5 +1,13 @@
 import { renderHTML } from "../utils/dom.js";
 
+function isAuthenticated() {
+  return !!(
+    localStorage.getItem("authToken") ||
+    sessionStorage.getItem("authToken") ||
+    localStorage.getItem("idToken")
+  );
+}
+
 export async function renderLayout(contentPath) {
   const root = document.getElementById("app");
 
@@ -16,20 +24,34 @@ export async function renderLayout(contentPath) {
   `;
 
   // Montar componentes
-  document.getElementById("sidebarMount").innerHTML =
-    await renderHTML("./components/sidebar/sidebar.html");
-  document.getElementById("topbarMount").innerHTML =
-    await renderHTML("./components/topbar/topbar.html");
-  document.getElementById("footerMount").innerHTML =
-    await renderHTML("./components/footer/footer.html");
+  const $sidebar = document.getElementById("sidebarMount");
+  const $topbar  = document.getElementById("topbarMount");
+  const $footer  = document.getElementById("footerMount");
+  const $content = document.getElementById("contentMount");
+
+  // Sidebar solo si hay sesión
+  if (isAuthenticated()) {
+    $sidebar.innerHTML = await renderHTML("./components/sidebar/sidebar.html");
+    // importa la lógica del sidebar (cierre en móvil, resaltar activo, etc.)
+    try { await import("../components/sidebar/sidebar.js"); } catch {}
+  } else {
+    $sidebar.innerHTML = "";
+  }
+
+  // Topbar y footer
+  $topbar.innerHTML = await renderHTML("./components/topbar/topbar.html");
+  $footer.innerHTML = await renderHTML("./components/footer/footer.html");
 
   // Contenido de la pantalla actual
-  document.getElementById("contentMount").innerHTML =
-    await renderHTML(contentPath);
+  $content.innerHTML = await renderHTML(contentPath);
 
-  // Marcar link activo según hash
-  const current = location.hash || "#/home";
-  document.querySelectorAll(".nav-link-sidebar").forEach(a => {
-    a.classList.toggle("active", a.getAttribute("href") === current);
+  // Marcar link activo según hash (soporta #/ruta y #/ruta?x=y)
+  const current = (location.hash || "#/home").toLowerCase();
+  document.querySelectorAll("#sidebarMount .nav-link-sidebar").forEach(a => {
+    const href = (a.getAttribute("href") || "").toLowerCase();
+    const active =
+      (current.startsWith("#/dashboard") && href === "#/dashboard") ||
+      (current.startsWith("#/home")      && href === "#/home");
+    a.classList.toggle("active", active);
   });
 }
